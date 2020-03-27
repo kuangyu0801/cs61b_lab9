@@ -2,6 +2,7 @@ package lab9;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  *  A hash table-backed Map implementation. Provides amortized constant time
@@ -78,7 +79,12 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        Set<K> keySet = new HashSet<K> ();
+        Iterator<K> myHashMapIterator = new MyHashMapIterator();
+        while(myHashMapIterator.hasNext()) {
+            keySet.add(myHashMapIterator.next());
+        }
+        return keySet;
     }
 
     /* Removes the mapping for the specified key from this map if exists.
@@ -86,7 +92,13 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * UnsupportedOperationException. */
     @Override
     public V remove(K key) {
-        throw new UnsupportedOperationException();
+
+        int bucketIndex = this.hash(key);
+        V rVal = buckets[bucketIndex].remove(key);
+        if(rVal != null) {
+            size -= 1;
+        }
+        return rVal;
     }
 
     /* Removes the entry for the specified key only if it is currently mapped to
@@ -94,11 +106,47 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * throw an UnsupportedOperationException.*/
     @Override
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException();
+        int bucketIndex = this.hash(key);
+        V rVal = buckets[bucketIndex].get(key);
+        if (rVal.equals(value) && (rVal != null)) {
+            buckets[bucketIndex].remove(key);
+            size -= 1;
+        }
+        return rVal;
+    }
+
+    public class MyHashMapIterator implements Iterator<K>{
+        private int wizPos;
+
+        public MyHashMapIterator() {
+            wizPos = 0;
+        }
+
+        public boolean hasNext() {
+            return wizPos < size;
+        }
+
+        public K next() {
+            int nextIndex = wizPos;
+            K rKey = null;
+            for(int i = 0; i < DEFAULT_SIZE; i += 1) {
+                Iterator<K> bucketIterator = buckets[i].iterator();
+                if(bucketIterator.hasNext()) {
+                    if(nextIndex == 0) {
+                        rKey = bucketIterator.next();
+                        break;
+                    }
+                    nextIndex -= 1;
+                }
+            }
+            wizPos += 1;
+            return rKey;
+        }
     }
 
     @Override
     public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+        Iterator<K> myHashMapIterator = new MyHashMapIterator();
+        return myHashMapIterator ;
     }
 }
