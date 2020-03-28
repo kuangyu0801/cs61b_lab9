@@ -2,6 +2,7 @@ package lab9;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Implementation of interface Map61B with BST as core data structure.
@@ -44,15 +45,15 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      *  or null if this map contains no mapping for the key.
      */
     private V getHelper(K key, Node p) {
-       if (p == null) {
-           return null;
-       } else if (key.compareTo(p.key) == 0) {
-           return p.value;
-       } else if (key.compareTo(p.key) < 0 ) {
-           return getHelper(key, p.left);
-       } else {
-           return getHelper(key, p.right);
-       }
+        if (p == null) {
+            return null;
+        } else if (key.compareTo(p.key) == 0) {
+            return p.value;
+        } else if (key.compareTo(p.key) < 0) {
+            return getHelper(key, p.left);
+        } else {
+            return getHelper(key, p.right);
+        }
     }
 
     /** Returns the value to which the specified key is mapped, or null if this
@@ -67,11 +68,11 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
       * Or if p is null, it returns a one node BSTMap containing (KEY, VALUE).
      */
     private Node putHelper(K key, V value, Node p) {
-        if (p == null)
+        if (p == null) {
             return new Node(key, value);
-        else if (key.compareTo(p.key) == 0) {
+        } else if (key.compareTo(p.key) == 0) {
             p.value = value;
-        } else if (key.compareTo(p.key) < 0 ) {
+        } else if (key.compareTo(p.key) < 0) {
             p.left = putHelper(key, value, p.left);
         } else {
             p.right = putHelper(key, value, p.right);
@@ -103,7 +104,25 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     /* Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        Set<K> keySet = new HashSet<>();
+        System.out.println("test");
+        this.printInorder(root, keySet);
+        return keySet;
+    }
+
+    private void printInorder(Node node, Set<K> keySet) {
+        if (node == null) {
+            return;
+        }
+        /* first recur on left child */
+        printInorder(node.left, keySet);
+
+        /* then print the data of node */
+        System.out.println(node.key + " ");
+        keySet.add(node.key);
+
+        /* now recur on right child */
+        printInorder(node.right, keySet);
     }
 
     private V removeHelper(K key, Node p) {
@@ -115,7 +134,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             p = null;
             size -= 1;
             return val;
-        } else if (key.compareTo(p.key) < 0 ) {
+        } else if (key.compareTo(p.key) < 0) {
             return removeHelper(key, p.left);
         } else {
             return removeHelper(key, p.right);
@@ -135,14 +154,14 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         V val = null;
         if (p == null) {
             return null;
-        } else if (key.compareTo(p.key) == 0 ) {
+        } else if (key.compareTo(p.key) == 0) {
             if (value.equals(p.value)) {
                 val = p.value;
                 p = null;
                 size -= 1;
             }
             return val;
-        } else if (key.compareTo(p.key) < 0 ) {
+        } else if (key.compareTo(p.key) < 0) {
             return removeHelper(key, value, p.left);
         } else {
             return removeHelper(key, value, p.right);
@@ -156,6 +175,27 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     @Override
     public V remove(K key, V value) {
         return removeHelper(key, value, root);
+    }
+
+    public class BSTMapIterator implements Iterator<K> {
+        private int wizPos;
+        private Node preNode;
+
+        public BSTMapIterator() {
+            wizPos = 0;
+        }
+
+        public boolean hasNext() {
+            return wizPos < size;
+        }
+
+        public K next() {
+            int nextIndex = wizPos;
+            K rKey = null;
+
+            wizPos += 1;
+            return rKey;
+        }
     }
 
     @Override
